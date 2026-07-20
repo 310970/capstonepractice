@@ -41,7 +41,7 @@ export default defineConfig({
 
 
     // Browser settings
-    headless: false,
+    headless: true,
 
     viewport: {
       width: 1280,
