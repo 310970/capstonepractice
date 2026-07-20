@@ -60,11 +60,20 @@ jobs:
           path: CapstonePracticeAPI/allure-results
           if-no-files-found: warn
 
-      # Checkout gh-pages branch if it exists
-      - name: Checkout gh-pages
+      # Preserve report history after the gh-pages branch has been created.
+      - name: Check whether gh-pages exists
+        id: gh_pages_branch
         if: always()
+        run: |
+          if git ls-remote --exit-code --heads origin gh-pages > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout gh-pages
+        if: always() && steps.gh_pages_branch.outputs.exists == 'true'
         uses: actions/checkout@v4
-        continue-on-error: true
         with:
           ref: gh-pages
           path: gh-pages
