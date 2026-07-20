@@ -19,7 +19,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: Playwright_UI_Testing
+        working-directory: ui
 
     steps:
       - name: Checkout Repository
