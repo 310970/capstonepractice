@@ -11,6 +11,9 @@ on:
 
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   api-tests:
     name: REST Assured API Tests
@@ -56,3 +59,31 @@ jobs:
           name: allure-results
           path: CapstonePracticeAPI/allure-results
           if-no-files-found: warn
+
+      # Get previous history from gh-pages
+      - name: Get Allure History
+        if: always()
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      # Generate Allure Report with History
+      - name: Generate Allure Report
+        if: always()
+        uses: simple-elf/allure-report-action@master
+        with:
+          gh_pages: gh-pages
+          allure_results: CapstonePracticeAPI/allure-results
+          allure_report: allure-report
+          allure_history: allure-history
+
+      # Publish Report to GitHub Pages
+      - name: Deploy Allure Report
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
