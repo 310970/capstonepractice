@@ -60,7 +60,7 @@ jobs:
           path: CapstonePracticeAPI/allure-results
           if-no-files-found: warn
 
-      # Checkout existing gh-pages branch (ignore if first run)
+      # Checkout gh-pages branch if it exists
       - name: Checkout gh-pages
         if: always()
         uses: actions/checkout@v4
@@ -69,15 +69,21 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
-      # Generate Allure Report with History
+      # Generate Allure Report with history
       - name: Generate Allure Report
         if: always()
         uses: simple-elf/allure-report-action@master
         with:
           gh_pages: gh-pages
           allure_results: CapstonePracticeAPI/allure-results
-          allure_report: CapstonePracticeAPI/allure-report
-          allure_history: CapstonePracticeAPI/allure-history
+          allure_report: allure-report
+          allure_history: allure-history
+          keep_reports: 20
+
+      # Remove any accidental .git folder
+      - name: Remove .git from Allure History
+        if: always()
+        run: rm -rf allure-history/.git
 
       # Publish to GitHub Pages
       - name: Deploy Allure Report
@@ -86,4 +92,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: CapstonePracticeAPI/allure-history
+          publish_dir: allure-history
+          force_orphan: true
